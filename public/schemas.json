@@ -1,0 +1,2580 @@
+{
+  "Operation": {
+    "$defs": {
+      "Ref": {
+        "additionalProperties": false,
+        "properties": {
+          "sample_id": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Sample Id",
+            "type": "string"
+          },
+          "revision": {
+            "minimum": 1,
+            "title": "Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sample_id",
+          "revision"
+        ],
+        "title": "Ref",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "kind": {
+              "const": "obtain"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "batch_id": {
+                  "type": "string"
+                },
+                "mass_g": {
+                  "description": "Decimal, 0.1–100 g, precision .001 g",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "batch_id",
+                "mass_g"
+              ],
+              "type": "object"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "kind": {
+              "const": "reference"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "standard_id": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "standard_id"
+              ],
+              "type": "object"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "kind": {
+              "const": "split"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "fraction": {
+                  "description": "Decimal, 0 < fraction < 1",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "fraction"
+              ],
+              "type": "object"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "kind": {
+              "const": "measure_mass"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {},
+              "required": [],
+              "type": "object"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "kind": {
+              "const": "measure_temperature"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {},
+              "required": [],
+              "type": "object"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "kind": {
+              "const": "measure_response"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {},
+              "required": [],
+              "type": "object"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "kind": {
+              "const": "heat"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "power": {
+                  "maximum": 10,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "duration": {
+                  "maximum": 120,
+                  "minimum": 1,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "power",
+                "duration"
+              ],
+              "type": "object"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "kind": {
+              "const": "cool"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "target_temperature_c": {
+                  "description": "Decimal, 20–200 °C",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "target_temperature_c"
+              ],
+              "type": "object"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "kind": {
+              "const": "separate"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "mode": {
+                  "const": "selective"
+                }
+              },
+              "required": [
+                "mode"
+              ],
+              "type": "object"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "kind": {
+              "const": "mix"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {},
+              "required": [],
+              "type": "object"
+            }
+          }
+        }
+      }
+    ],
+    "properties": {
+      "kind": {
+        "enum": [
+          "obtain",
+          "reference",
+          "split",
+          "measure_mass",
+          "measure_temperature",
+          "measure_response",
+          "heat",
+          "cool",
+          "separate",
+          "mix"
+        ],
+        "title": "Kind",
+        "type": "string"
+      },
+      "instrument_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Instrument Id"
+      },
+      "inputs": {
+        "items": {
+          "$ref": "#/$defs/Ref"
+        },
+        "maxItems": 2,
+        "title": "Inputs",
+        "type": "array"
+      },
+      "parameters": {
+        "additionalProperties": true,
+        "title": "Parameters",
+        "type": "object"
+      },
+      "prediction_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Prediction Id"
+      }
+    },
+    "required": [
+      "kind"
+    ],
+    "title": "Operation",
+    "type": "object"
+  },
+  "Recipe": {
+    "$defs": {
+      "Step": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "heat",
+              "cool",
+              "separate"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "title": "Parameters",
+            "type": "object"
+          },
+          "keep_output": {
+            "anyOf": [
+              {
+                "enum": [
+                  "selected",
+                  "remainder"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Keep Output"
+          }
+        },
+        "required": [
+          "kind",
+          "parameters"
+        ],
+        "title": "Step",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "name": {
+        "maxLength": 200,
+        "minLength": 1,
+        "title": "Name",
+        "type": "string"
+      },
+      "steps": {
+        "items": {
+          "$ref": "#/$defs/Step"
+        },
+        "maxItems": 20,
+        "minItems": 1,
+        "title": "Steps",
+        "type": "array"
+      },
+      "applicability": {
+        "default": "",
+        "maxLength": 5000,
+        "title": "Applicability",
+        "type": "string"
+      },
+      "evidence_ids": {
+        "items": {
+          "type": "string"
+        },
+        "maxItems": 100,
+        "title": "Evidence Ids",
+        "type": "array"
+      }
+    },
+    "required": [
+      "name",
+      "steps"
+    ],
+    "title": "Recipe",
+    "type": "object"
+  },
+  "Note": {
+    "additionalProperties": false,
+    "properties": {
+      "text": {
+        "maxLength": 10000,
+        "minLength": 1,
+        "title": "Text",
+        "type": "string"
+      },
+      "sample_ids": {
+        "items": {
+          "type": "string"
+        },
+        "maxItems": 100,
+        "title": "Sample Ids",
+        "type": "array"
+      },
+      "observation_ids": {
+        "items": {
+          "type": "string"
+        },
+        "maxItems": 100,
+        "title": "Observation Ids",
+        "type": "array"
+      },
+      "order_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Order Id"
+      },
+      "supersedes": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Supersedes"
+      }
+    },
+    "required": [
+      "text"
+    ],
+    "title": "Note",
+    "type": "object"
+  },
+  "Prediction": {
+    "$defs": {
+      "Operation": {
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "obtain"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "batch_id": {
+                      "type": "string"
+                    },
+                    "mass_g": {
+                      "description": "Decimal, 0.1–100 g, precision .001 g",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "batch_id",
+                    "mass_g"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "reference"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "standard_id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "standard_id"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "split"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "fraction": {
+                      "description": "Decimal, 0 < fraction < 1",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "fraction"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "measure_mass"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "required": [],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "measure_temperature"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "required": [],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "measure_response"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "required": [],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "heat"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "power": {
+                      "maximum": 10,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "duration": {
+                      "maximum": 120,
+                      "minimum": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "power",
+                    "duration"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "cool"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "target_temperature_c": {
+                      "description": "Decimal, 20–200 °C",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "target_temperature_c"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "separate"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "mode": {
+                      "const": "selective"
+                    }
+                  },
+                  "required": [
+                    "mode"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "mix"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "required": [],
+                  "type": "object"
+                }
+              }
+            }
+          }
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "obtain",
+              "reference",
+              "split",
+              "measure_mass",
+              "measure_temperature",
+              "measure_response",
+              "heat",
+              "cool",
+              "separate",
+              "mix"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "instrument_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instrument Id"
+          },
+          "inputs": {
+            "items": {
+              "$ref": "#/$defs/Ref"
+            },
+            "maxItems": 2,
+            "title": "Inputs",
+            "type": "array"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "title": "Parameters",
+            "type": "object"
+          },
+          "prediction_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Prediction Id"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "title": "Operation",
+        "type": "object"
+      },
+      "Ref": {
+        "additionalProperties": false,
+        "properties": {
+          "sample_id": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Sample Id",
+            "type": "string"
+          },
+          "revision": {
+            "minimum": 1,
+            "title": "Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sample_id",
+          "revision"
+        ],
+        "title": "Ref",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "quantity": {
+        "enum": [
+          "mass",
+          "temperature",
+          "response"
+        ],
+        "title": "Quantity",
+        "type": "string"
+      },
+      "expected_value": {
+        "title": "Expected Value",
+        "type": "string"
+      },
+      "interval": {
+        "anyOf": [
+          {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Interval"
+      },
+      "planned_operation": {
+        "$ref": "#/$defs/Operation"
+      },
+      "hypothesis": {
+        "default": "",
+        "maxLength": 10000,
+        "title": "Hypothesis",
+        "type": "string"
+      }
+    },
+    "required": [
+      "quantity",
+      "expected_value",
+      "planned_operation"
+    ],
+    "title": "Prediction",
+    "type": "object"
+  },
+  "Submission": {
+    "additionalProperties": false,
+    "properties": {
+      "order_id": {
+        "title": "Order Id",
+        "type": "string"
+      },
+      "recipe_id": {
+        "title": "Recipe Id",
+        "type": "string"
+      }
+    },
+    "required": [
+      "order_id",
+      "recipe_id"
+    ],
+    "title": "Submission",
+    "type": "object"
+  },
+  "PublicSample": {
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "revision": {
+        "title": "Revision",
+        "type": "integer"
+      },
+      "status": {
+        "enum": [
+          "available",
+          "busy",
+          "consumed"
+        ],
+        "title": "Status",
+        "type": "string"
+      },
+      "batch_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Batch Id"
+      },
+      "provenance": {
+        "additionalProperties": true,
+        "title": "Provenance",
+        "type": "object"
+      },
+      "history": {
+        "items": {
+          "type": "string"
+        },
+        "title": "History",
+        "type": "array"
+      },
+      "observation_ids": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Observation Ids",
+        "type": "array"
+      },
+      "created_at": {
+        "title": "Created At",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "revision",
+      "status",
+      "batch_id",
+      "provenance",
+      "history",
+      "observation_ids",
+      "created_at"
+    ],
+    "title": "PublicSample",
+    "type": "object"
+  },
+  "Observation": {
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "sample_id": {
+        "title": "Sample Id",
+        "type": "string"
+      },
+      "sample_revision": {
+        "title": "Sample Revision",
+        "type": "integer"
+      },
+      "quantity": {
+        "enum": [
+          "mass",
+          "temperature",
+          "response"
+        ],
+        "title": "Quantity",
+        "type": "string"
+      },
+      "value": {
+        "title": "Value",
+        "type": "string"
+      },
+      "unit": {
+        "title": "Unit",
+        "type": "string"
+      },
+      "instrument_id": {
+        "title": "Instrument Id",
+        "type": "string"
+      },
+      "recorded_at": {
+        "title": "Recorded At",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "sample_id",
+      "sample_revision",
+      "quantity",
+      "value",
+      "unit",
+      "instrument_id",
+      "recorded_at"
+    ],
+    "title": "Observation",
+    "type": "object"
+  },
+  "PublicOperation": {
+    "$defs": {
+      "Observation": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "sample_id": {
+            "title": "Sample Id",
+            "type": "string"
+          },
+          "sample_revision": {
+            "title": "Sample Revision",
+            "type": "integer"
+          },
+          "quantity": {
+            "enum": [
+              "mass",
+              "temperature",
+              "response"
+            ],
+            "title": "Quantity",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "instrument_id": {
+            "title": "Instrument Id",
+            "type": "string"
+          },
+          "recorded_at": {
+            "title": "Recorded At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "sample_id",
+          "sample_revision",
+          "quantity",
+          "value",
+          "unit",
+          "instrument_id",
+          "recorded_at"
+        ],
+        "title": "Observation",
+        "type": "object"
+      },
+      "OperationResult": {
+        "additionalProperties": false,
+        "properties": {
+          "samples": {
+            "items": {
+              "$ref": "#/$defs/PublicSample"
+            },
+            "title": "Samples",
+            "type": "array"
+          },
+          "observations": {
+            "items": {
+              "$ref": "#/$defs/Observation"
+            },
+            "title": "Observations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "samples",
+          "observations"
+        ],
+        "title": "OperationResult",
+        "type": "object"
+      },
+      "PublicError": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "retryable": {
+            "title": "Retryable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "retryable"
+        ],
+        "title": "PublicError",
+        "type": "object"
+      },
+      "PublicSample": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "available",
+              "busy",
+              "consumed"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "batch_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Id"
+          },
+          "provenance": {
+            "additionalProperties": true,
+            "title": "Provenance",
+            "type": "object"
+          },
+          "history": {
+            "items": {
+              "type": "string"
+            },
+            "title": "History",
+            "type": "array"
+          },
+          "observation_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Observation Ids",
+            "type": "array"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "revision",
+          "status",
+          "batch_id",
+          "provenance",
+          "history",
+          "observation_ids",
+          "created_at"
+        ],
+        "title": "PublicSample",
+        "type": "object"
+      },
+      "Ref": {
+        "additionalProperties": false,
+        "properties": {
+          "sample_id": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Sample Id",
+            "type": "string"
+          },
+          "revision": {
+            "minimum": 1,
+            "title": "Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sample_id",
+          "revision"
+        ],
+        "title": "Ref",
+        "type": "object"
+      },
+      "ValidationRepeat": {
+        "additionalProperties": false,
+        "properties": {
+          "repeat": {
+            "title": "Repeat",
+            "type": "integer"
+          },
+          "measured_response": {
+            "title": "Measured Response",
+            "type": "string"
+          },
+          "yield": {
+            "title": "Yield",
+            "type": "string"
+          },
+          "recipe_credits": {
+            "title": "Recipe Credits",
+            "type": "string"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "observation_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Observation Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "repeat",
+          "measured_response",
+          "yield",
+          "recipe_credits",
+          "reasons",
+          "observation_ids"
+        ],
+        "title": "ValidationRepeat",
+        "type": "object"
+      },
+      "ValidationResult": {
+        "additionalProperties": false,
+        "properties": {
+          "pass": {
+            "title": "Pass",
+            "type": "boolean"
+          },
+          "repeats": {
+            "items": {
+              "$ref": "#/$defs/ValidationRepeat"
+            },
+            "title": "Repeats",
+            "type": "array"
+          },
+          "observations": {
+            "items": {
+              "$ref": "#/$defs/Observation"
+            },
+            "title": "Observations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "pass",
+          "repeats",
+          "observations"
+        ],
+        "title": "ValidationResult",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "status": {
+        "enum": [
+          "accepted",
+          "running",
+          "succeeded",
+          "failed"
+        ],
+        "title": "Status",
+        "type": "string"
+      },
+      "kind": {
+        "title": "Kind",
+        "type": "string"
+      },
+      "instrument_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Instrument Id"
+      },
+      "inputs": {
+        "items": {
+          "$ref": "#/$defs/Ref"
+        },
+        "title": "Inputs",
+        "type": "array"
+      },
+      "parameters": {
+        "additionalProperties": true,
+        "title": "Parameters",
+        "type": "object"
+      },
+      "prediction_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Prediction Id"
+      },
+      "result": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/OperationResult"
+          },
+          {
+            "$ref": "#/$defs/ValidationResult"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Result"
+      },
+      "error": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/PublicError"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "created_at": {
+        "title": "Created At",
+        "type": "string"
+      },
+      "completed_at": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Completed At"
+      }
+    },
+    "required": [
+      "id",
+      "status",
+      "kind",
+      "instrument_id",
+      "inputs",
+      "parameters",
+      "prediction_id",
+      "result",
+      "error",
+      "created_at",
+      "completed_at"
+    ],
+    "title": "PublicOperation",
+    "type": "object"
+  },
+  "EventPage": {
+    "$defs": {
+      "PublicEvent": {
+        "additionalProperties": false,
+        "properties": {
+          "event_id": {
+            "title": "Event Id",
+            "type": "string"
+          },
+          "sequence": {
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "operation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operation Id"
+          },
+          "recorded_at": {
+            "title": "Recorded At",
+            "type": "string"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "title": "Payload",
+            "type": "object"
+          }
+        },
+        "required": [
+          "event_id",
+          "sequence",
+          "kind",
+          "operation_id",
+          "recorded_at",
+          "payload"
+        ],
+        "title": "PublicEvent",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "items": {
+        "items": {
+          "$ref": "#/$defs/PublicEvent"
+        },
+        "title": "Items",
+        "type": "array"
+      },
+      "next_after": {
+        "title": "Next After",
+        "type": "integer"
+      },
+      "has_more": {
+        "title": "Has More",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "items",
+      "next_after",
+      "has_more"
+    ],
+    "title": "EventPage",
+    "type": "object"
+  },
+  "ErrorResponse": {
+    "$defs": {
+      "PublicError": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "retryable": {
+            "title": "Retryable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "retryable"
+        ],
+        "title": "PublicError",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "error": {
+        "$ref": "#/$defs/PublicError"
+      },
+      "request_id": {
+        "title": "Request Id",
+        "type": "string"
+      }
+    },
+    "required": [
+      "error",
+      "request_id"
+    ],
+    "title": "ErrorResponse",
+    "type": "object"
+  },
+  "PublicBatch": {
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "label": {
+        "title": "Label",
+        "type": "string"
+      },
+      "remaining_mass_g": {
+        "title": "Remaining Mass G",
+        "type": "string"
+      },
+      "verification_reserve_g": {
+        "title": "Verification Reserve G",
+        "type": "string"
+      },
+      "min_mass_g": {
+        "title": "Min Mass G",
+        "type": "string"
+      },
+      "max_mass_g": {
+        "title": "Max Mass G",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "label",
+      "remaining_mass_g",
+      "verification_reserve_g",
+      "min_mass_g",
+      "max_mass_g"
+    ],
+    "title": "PublicBatch",
+    "type": "object"
+  },
+  "PublicOrder": {
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "brief": {
+        "title": "Brief",
+        "type": "string"
+      },
+      "batch_id": {
+        "title": "Batch Id",
+        "type": "string"
+      },
+      "input_mass_g": {
+        "title": "Input Mass G",
+        "type": "string"
+      },
+      "response_min": {
+        "title": "Response Min",
+        "type": "string"
+      },
+      "yield_min": {
+        "title": "Yield Min",
+        "type": "string"
+      },
+      "max_recipe_credits": {
+        "title": "Max Recipe Credits",
+        "type": "string"
+      },
+      "validation_repeats": {
+        "title": "Validation Repeats",
+        "type": "integer"
+      },
+      "validation_cost": {
+        "title": "Validation Cost",
+        "type": "string"
+      },
+      "status": {
+        "enum": [
+          "open",
+          "completed"
+        ],
+        "title": "Status",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "brief",
+      "batch_id",
+      "input_mass_g",
+      "response_min",
+      "yield_min",
+      "max_recipe_credits",
+      "validation_repeats",
+      "validation_cost",
+      "status"
+    ],
+    "title": "PublicOrder",
+    "type": "object"
+  },
+  "PublicStandard": {
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "label": {
+        "title": "Label",
+        "type": "string"
+      },
+      "remaining_count": {
+        "title": "Remaining Count",
+        "type": "integer"
+      },
+      "certificate": {
+        "additionalProperties": {
+          "type": "string"
+        },
+        "title": "Certificate",
+        "type": "object"
+      }
+    },
+    "required": [
+      "id",
+      "label",
+      "remaining_count",
+      "certificate"
+    ],
+    "title": "PublicStandard",
+    "type": "object"
+  },
+  "PublicSubmission": {
+    "$defs": {
+      "Observation": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "sample_id": {
+            "title": "Sample Id",
+            "type": "string"
+          },
+          "sample_revision": {
+            "title": "Sample Revision",
+            "type": "integer"
+          },
+          "quantity": {
+            "enum": [
+              "mass",
+              "temperature",
+              "response"
+            ],
+            "title": "Quantity",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "instrument_id": {
+            "title": "Instrument Id",
+            "type": "string"
+          },
+          "recorded_at": {
+            "title": "Recorded At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "sample_id",
+          "sample_revision",
+          "quantity",
+          "value",
+          "unit",
+          "instrument_id",
+          "recorded_at"
+        ],
+        "title": "Observation",
+        "type": "object"
+      },
+      "ValidationRepeat": {
+        "additionalProperties": false,
+        "properties": {
+          "repeat": {
+            "title": "Repeat",
+            "type": "integer"
+          },
+          "measured_response": {
+            "title": "Measured Response",
+            "type": "string"
+          },
+          "yield": {
+            "title": "Yield",
+            "type": "string"
+          },
+          "recipe_credits": {
+            "title": "Recipe Credits",
+            "type": "string"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "observation_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Observation Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "repeat",
+          "measured_response",
+          "yield",
+          "recipe_credits",
+          "reasons",
+          "observation_ids"
+        ],
+        "title": "ValidationRepeat",
+        "type": "object"
+      },
+      "ValidationResult": {
+        "additionalProperties": false,
+        "properties": {
+          "pass": {
+            "title": "Pass",
+            "type": "boolean"
+          },
+          "repeats": {
+            "items": {
+              "$ref": "#/$defs/ValidationRepeat"
+            },
+            "title": "Repeats",
+            "type": "array"
+          },
+          "observations": {
+            "items": {
+              "$ref": "#/$defs/Observation"
+            },
+            "title": "Observations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "pass",
+          "repeats",
+          "observations"
+        ],
+        "title": "ValidationResult",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "order_id": {
+        "title": "Order Id",
+        "type": "string"
+      },
+      "recipe_id": {
+        "title": "Recipe Id",
+        "type": "string"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "submission_id": {
+        "title": "Submission Id",
+        "type": "string"
+      },
+      "operation_id": {
+        "title": "Operation Id",
+        "type": "string"
+      },
+      "status": {
+        "enum": [
+          "accepted",
+          "succeeded",
+          "failed"
+        ],
+        "title": "Status",
+        "type": "string"
+      },
+      "result": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/ValidationResult"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "created_at": {
+        "title": "Created At",
+        "type": "string"
+      }
+    },
+    "required": [
+      "order_id",
+      "recipe_id",
+      "id",
+      "submission_id",
+      "operation_id",
+      "status",
+      "result",
+      "created_at"
+    ],
+    "title": "PublicSubmission",
+    "type": "object"
+  },
+  "SavedNote": {
+    "additionalProperties": false,
+    "properties": {
+      "text": {
+        "maxLength": 10000,
+        "minLength": 1,
+        "title": "Text",
+        "type": "string"
+      },
+      "sample_ids": {
+        "items": {
+          "type": "string"
+        },
+        "maxItems": 100,
+        "title": "Sample Ids",
+        "type": "array"
+      },
+      "observation_ids": {
+        "items": {
+          "type": "string"
+        },
+        "maxItems": 100,
+        "title": "Observation Ids",
+        "type": "array"
+      },
+      "order_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Order Id"
+      },
+      "supersedes": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Supersedes"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "created_at": {
+        "title": "Created At",
+        "type": "string"
+      }
+    },
+    "required": [
+      "text",
+      "id",
+      "created_at"
+    ],
+    "title": "SavedNote",
+    "type": "object"
+  },
+  "SavedRecipe": {
+    "$defs": {
+      "Step": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "heat",
+              "cool",
+              "separate"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "title": "Parameters",
+            "type": "object"
+          },
+          "keep_output": {
+            "anyOf": [
+              {
+                "enum": [
+                  "selected",
+                  "remainder"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Keep Output"
+          }
+        },
+        "required": [
+          "kind",
+          "parameters"
+        ],
+        "title": "Step",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "name": {
+        "maxLength": 200,
+        "minLength": 1,
+        "title": "Name",
+        "type": "string"
+      },
+      "steps": {
+        "items": {
+          "$ref": "#/$defs/Step"
+        },
+        "maxItems": 20,
+        "minItems": 1,
+        "title": "Steps",
+        "type": "array"
+      },
+      "applicability": {
+        "default": "",
+        "maxLength": 5000,
+        "title": "Applicability",
+        "type": "string"
+      },
+      "evidence_ids": {
+        "items": {
+          "type": "string"
+        },
+        "maxItems": 100,
+        "title": "Evidence Ids",
+        "type": "array"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "created_at": {
+        "title": "Created At",
+        "type": "string"
+      }
+    },
+    "required": [
+      "name",
+      "steps",
+      "id",
+      "created_at"
+    ],
+    "title": "SavedRecipe",
+    "type": "object"
+  },
+  "SavedPrediction": {
+    "$defs": {
+      "Operation": {
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "obtain"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "batch_id": {
+                      "type": "string"
+                    },
+                    "mass_g": {
+                      "description": "Decimal, 0.1–100 g, precision .001 g",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "batch_id",
+                    "mass_g"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "reference"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "standard_id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "standard_id"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "split"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "fraction": {
+                      "description": "Decimal, 0 < fraction < 1",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "fraction"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "measure_mass"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "required": [],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "measure_temperature"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "required": [],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "measure_response"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "required": [],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "heat"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "power": {
+                      "maximum": 10,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "duration": {
+                      "maximum": 120,
+                      "minimum": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "power",
+                    "duration"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "cool"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "target_temperature_c": {
+                      "description": "Decimal, 20–200 °C",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "target_temperature_c"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "separate"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "mode": {
+                      "const": "selective"
+                    }
+                  },
+                  "required": [
+                    "mode"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "mix"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "required": [],
+                  "type": "object"
+                }
+              }
+            }
+          }
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "obtain",
+              "reference",
+              "split",
+              "measure_mass",
+              "measure_temperature",
+              "measure_response",
+              "heat",
+              "cool",
+              "separate",
+              "mix"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "instrument_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instrument Id"
+          },
+          "inputs": {
+            "items": {
+              "$ref": "#/$defs/Ref"
+            },
+            "maxItems": 2,
+            "title": "Inputs",
+            "type": "array"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "title": "Parameters",
+            "type": "object"
+          },
+          "prediction_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Prediction Id"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "title": "Operation",
+        "type": "object"
+      },
+      "Ref": {
+        "additionalProperties": false,
+        "properties": {
+          "sample_id": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Sample Id",
+            "type": "string"
+          },
+          "revision": {
+            "minimum": 1,
+            "title": "Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sample_id",
+          "revision"
+        ],
+        "title": "Ref",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "quantity": {
+        "enum": [
+          "mass",
+          "temperature",
+          "response"
+        ],
+        "title": "Quantity",
+        "type": "string"
+      },
+      "expected_value": {
+        "title": "Expected Value",
+        "type": "string"
+      },
+      "interval": {
+        "anyOf": [
+          {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Interval"
+      },
+      "planned_operation": {
+        "$ref": "#/$defs/Operation"
+      },
+      "hypothesis": {
+        "default": "",
+        "maxLength": 10000,
+        "title": "Hypothesis",
+        "type": "string"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "created_at": {
+        "title": "Created At",
+        "type": "string"
+      },
+      "operation_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Operation Id"
+      }
+    },
+    "required": [
+      "quantity",
+      "expected_value",
+      "planned_operation",
+      "id",
+      "created_at"
+    ],
+    "title": "SavedPrediction",
+    "type": "object"
+  },
+  "Session": {
+    "$defs": {
+      "Budget": {
+        "additionalProperties": false,
+        "properties": {
+          "remaining_credits": {
+            "title": "Remaining Credits",
+            "type": "string"
+          },
+          "reserved_credits": {
+            "title": "Reserved Credits",
+            "type": "string"
+          },
+          "available_credits": {
+            "title": "Available Credits",
+            "type": "string"
+          },
+          "research_spent": {
+            "title": "Research Spent",
+            "type": "string"
+          },
+          "verification_spent": {
+            "title": "Verification Spent",
+            "type": "string"
+          },
+          "llm_cost": {
+            "title": "Llm Cost",
+            "type": "string"
+          }
+        },
+        "required": [
+          "remaining_credits",
+          "reserved_credits",
+          "available_credits",
+          "research_spent",
+          "verification_spent",
+          "llm_cost"
+        ],
+        "title": "Budget",
+        "type": "object"
+      },
+      "PublicOrder": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "brief": {
+            "title": "Brief",
+            "type": "string"
+          },
+          "batch_id": {
+            "title": "Batch Id",
+            "type": "string"
+          },
+          "input_mass_g": {
+            "title": "Input Mass G",
+            "type": "string"
+          },
+          "response_min": {
+            "title": "Response Min",
+            "type": "string"
+          },
+          "yield_min": {
+            "title": "Yield Min",
+            "type": "string"
+          },
+          "max_recipe_credits": {
+            "title": "Max Recipe Credits",
+            "type": "string"
+          },
+          "validation_repeats": {
+            "title": "Validation Repeats",
+            "type": "integer"
+          },
+          "validation_cost": {
+            "title": "Validation Cost",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "open",
+              "completed"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "brief",
+          "batch_id",
+          "input_mass_g",
+          "response_min",
+          "yield_min",
+          "max_recipe_credits",
+          "validation_repeats",
+          "validation_cost",
+          "status"
+        ],
+        "title": "PublicOrder",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "run_id": {
+        "title": "Run Id",
+        "type": "string"
+      },
+      "actor": {
+        "additionalProperties": {
+          "type": "string"
+        },
+        "title": "Actor",
+        "type": "object"
+      },
+      "available_actions": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Available Actions",
+        "type": "array"
+      },
+      "budget": {
+        "$ref": "#/$defs/Budget"
+      },
+      "orders": {
+        "items": {
+          "$ref": "#/$defs/PublicOrder"
+        },
+        "title": "Orders",
+        "type": "array"
+      },
+      "last_event_sequence": {
+        "title": "Last Event Sequence",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "run_id",
+      "actor",
+      "available_actions",
+      "budget",
+      "orders",
+      "last_event_sequence"
+    ],
+    "title": "Session",
+    "type": "object"
+  },
+  "PublicInstrument": {
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Id"
+      },
+      "type": {
+        "title": "Type",
+        "type": "string"
+      },
+      "status": {
+        "enum": [
+          "available",
+          "busy"
+        ],
+        "title": "Status",
+        "type": "string"
+      },
+      "cost_credits": {
+        "title": "Cost Credits",
+        "type": "string"
+      },
+      "limits": {
+        "additionalProperties": true,
+        "title": "Limits",
+        "type": "object"
+      },
+      "action_schema": {
+        "additionalProperties": true,
+        "title": "Action Schema",
+        "type": "object"
+      }
+    },
+    "required": [
+      "id",
+      "type",
+      "status",
+      "cost_credits",
+      "limits",
+      "action_schema"
+    ],
+    "title": "PublicInstrument",
+    "type": "object"
+  }
+}

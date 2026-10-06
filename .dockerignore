@@ -1,0 +1,5 @@
+*
+!requirements.lock
+!lab/
+!lab/**
+lab/__pycache__/

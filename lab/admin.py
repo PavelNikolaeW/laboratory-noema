@@ -15,13 +15,30 @@ def main():
     c=commands.add_parser('gain'); c.add_argument('run_id'); c.add_argument('value')
     c=commands.add_parser('export'); c.add_argument('run_id'); c.add_argument('--private',action='store_true'); c.add_argument('--output',required=True)
     c=commands.add_parser('metrics'); c.add_argument('run_id')
+    c=commands.add_parser('pilot'); c.add_argument('run_id')
+    c=commands.add_parser('phase'); c.add_argument('run_id'); c.add_argument('phase',choices=['P1','P2','P3'])
+    c=commands.add_parser('snapshot'); c.add_argument('run_id'); c.add_argument('--output',required=True)
+    c=commands.add_parser('fork'); c.add_argument('snapshot'); c.add_argument('--gain-multiplier',default='.5')
     args=p.parse_args(); store=Store(args.db)
+    from .research import install_pilot, advance_phase, snapshot, fork_snapshot
+    if args.command in ('snapshot','fork'):
+        try:
+            result = snapshot(store,args.run_id,args.output) if args.command=='snapshot' else fork_snapshot(store,args.snapshot,args.gain_multiplier)
+        except (ValueError, KeyError, PermissionError, OSError) as error: p.error(str(error))
+        print(json.dumps(result,ensure_ascii=False,indent=2)); return
     if args.command=='create':
         pair=uid() if args.paired else None
         result=store.create(args.label,args.scenario,args.mode,pair)
         if args.paired: result={'pair_id':pair,'runs':[result,store.create(args.label+' — контроль',args.scenario,args.mode,pair)]}
         print(json.dumps(result,ensure_ascii=False,indent=2)); return
     with store.transaction(run_id=args.run_id) as run:
+        if args.command in ('pilot','phase'):
+            try:
+                result=install_pilot(run) if args.command=='pilot' else advance_phase(run,args.phase)
+            except ValueError as error: p.error(str(error))
+            print(json.dumps({'run_id':run['id'],'active_phase':run['research']['active_phase'],
+                              'order_ids':run['research']['phases'][run['research']['active_phase']]['order_ids'],
+                              'feasibility':'validated privately at baseline and half heater gain'})); return
         if args.command=='metrics':
             from .metrics import summarize
             print(json.dumps(summarize(run),ensure_ascii=False,indent=2)); return

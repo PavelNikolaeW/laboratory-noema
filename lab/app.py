@@ -15,6 +15,8 @@ from .store import Store, uid, now, encode
 from .dto import Operation, Recipe, Note, Prediction, Submission, INSTRUMENT, PublicOperation, PublicSample, Observation, EventPage, ErrorResponse
 from .service import LabError, fail, get, public_sample, public_operation, accept, accept_submission, replay, remember, event, finish, abort, check_inputs
 
+from .research import active_orders
+
 logger=logging.getLogger('lab')
 STATIC=Path(__file__).parent/'static'
 
@@ -103,7 +105,7 @@ def create_app(database=None,delay=None):
     @app.get('/api/v1/session',response_model=dto.Session)
     def session(token=Depends(participant)):
         with store.transaction(token=token) as r:
-            return {'run_id':r['id'],'actor':{'label':r['label']},'available_actions':list(Operation.model_fields['kind'].annotation.__args__), 'budget':{'remaining_credits':r['credits'],'reserved_credits':r['reserved'],'available_credits':str(D(r['credits'])-D(r['reserved'])),'research_spent':r['research_spent'],'verification_spent':r['verification_spent'],'llm_cost':'tracked_by_harness'},'orders':list(r['orders'].values()),'last_event_sequence':r['sequence']}
+            return {'run_id':r['id'],'actor':{'label':r['label']},'available_actions':list(Operation.model_fields['kind'].annotation.__args__), 'budget':{'remaining_credits':r['credits'],'reserved_credits':r['reserved'],'available_credits':str(D(r['credits'])-D(r['reserved'])),'research_spent':r['research_spent'],'verification_spent':r['verification_spent'],'llm_cost':'tracked_by_harness'},'orders':active_orders(r),'last_event_sequence':r['sequence']}
 
     @app.get('/api/v1/instruments',response_model=dto.Items[dto.PublicInstrument])
     def instruments(token=Depends(participant)):
@@ -141,7 +143,8 @@ def create_app(database=None,delay=None):
     def listing(request:Request,cursor:str|None=None,limit:int=Query(100,ge=1,le=200),sample_id:str|None=None,status:str|None=None,batch_id:str|None=None,token=Depends(participant)):
         collection=request.url.path.rsplit('/',1)[-1]
         with store.transaction(token=token) as r:
-            values=sorted(r[collection].values(),key=lambda v:(v.get('created_at',v.get('recorded_at','')),v['id']))
+            source=active_orders(r) if collection=='orders' else r[collection].values()
+            values=sorted(source,key=lambda v:(v.get('created_at',v.get('recorded_at','')),v['id']))
             if status: values=[v for v in values if v.get('status')==status]
             if batch_id: values=[v for v in values if v.get('batch_id')==batch_id]
             if sample_id: values=[v for v in values if v.get('sample_id')==sample_id or sample_id in v.get('sample_ids',[])]

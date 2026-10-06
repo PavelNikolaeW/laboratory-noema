@@ -4,6 +4,7 @@ import os
 import uuid
 from contextlib import contextmanager
 from datetime import datetime, timezone
+from pathlib import Path
 from sqlalchemy import create_engine
 from .engine import DEFAULT_CONFIG
 
@@ -23,6 +24,10 @@ class Store:
             c.exec_driver_sql('CREATE TABLE IF NOT EXISTS runs (id TEXT PRIMARY KEY, token TEXT UNIQUE NOT NULL, data TEXT NOT NULL)')
             c.exec_driver_sql('PRAGMA user_version=1')
             c.commit()
+        # Private state and durable admin retry credentials must not be world-readable.
+        for filename in (path, path+'-wal', path+'-shm'):
+            if Path(filename).is_file():
+                os.chmod(filename, 0o600)
 
     @contextmanager
     def transaction(self, token=None, run_id=None):

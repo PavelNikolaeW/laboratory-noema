@@ -90,7 +90,11 @@ def observation(run,s,quantity,instrument,config):
     return obs
 
 def accept_submission(run,body):
-    order=get(run,'orders',body['order_id']); recipe=get(run,'recipes',body['recipe_id'])
+    from .research import active_orders
+    order=get(run,'orders',body['order_id'])
+    if body['order_id'] not in {order['id'] for order in active_orders(run)}:
+        fail('order_inactive','Заявка больше не активна')
+    recipe=get(run,'recipes',body['recipe_id'])
     batch=get(run,'batches',order['batch_id']); amount=D(order['input_mass_g'])*order['validation_repeats']
     if D(batch['verification_reserve_g'])<amount: fail('insufficient_material','Резерв проверки исчерпан')
     price=D(order['validation_cost']); reserve(run,price,'verification')

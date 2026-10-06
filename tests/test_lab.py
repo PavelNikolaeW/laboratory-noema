@@ -288,7 +288,7 @@ def test_admin_boundary_exports_metrics(world,tmp_path):
     assert subprocess.run([*other,'export',second['run_id'],'--output',str(output)],capture_output=True).returncode==0
     trace=json.loads(output.read_text())
     assert 'config' not in trace and any(e['kind']=='maintenance' for e in trace['events'])
-    assert '.5' not in json.dumps(trace['events'])
+    assert [e['payload'] for e in trace['events'] if e['kind']=='maintenance'] == [{'message':'Оборудование прошло обслуживание; проверьте применимость процедур.'}]
     with app.state.store.transaction(run_id=auth['run_id']) as r:
         assert summarize(r)['credits']['research']=='1'
     metrics=subprocess.run([*command,'metrics',auth['run_id']],capture_output=True,text=True)

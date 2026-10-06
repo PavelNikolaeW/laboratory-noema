@@ -12,13 +12,17 @@ Python 3.12+, локальный однопроцессный сервис:
 
 Открыть http://127.0.0.1:8765 и вставить `token` из `credentials-local.json`. Этот файл и БД исключены из Git. UI уже обслуживается сервером; Node.js, сборка frontend и отдельный frontend-процесс не нужны.
 
+Кнопка **«Начать новую попытку»** создаёт чистое прохождение того же сценария: 100 credits и полный запас материала. Предыдущая попытка сохраняется; переключатель в шапке позволяет вернуться к ней в текущей браузерной сессии. Физического удаления или обнуления прежнего run нет.
+
+`run.sh` запускает публичный сервис на 8765 и отдельный локальный контроль человека на 8766. Контроль требует локальную HttpOnly cookie и токен текущей попытки, проверяет Origin и сохраняет ключ безопасного повтора. Participant API и SDK не предоставляют создание попыток. Не открывайте порт 8766 или локальный управляющий ключ worker харнеса. При запуске только публичного uvicorn/Docker кнопка отсутствует.
+
 При ручной установке:
 
 ```sh
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.lock
 .venv/bin/python -m lab.admin create > credentials-local.json
-.venv/bin/python -m uvicorn lab.app:app --host 127.0.0.1 --port 8765 --workers 1
+.venv/bin/python -m lab.local
 ```
 
 OpenAPI: `/api/openapi.json`. Swagger: `/api/docs`. Публичный контракт: [PUBLIC_API.md](PUBLIC_API.md). `Authorization: Bearer <token>`, все POST требуют `Idempotency-Key`. UI хранит токен только в текущей браузерной сессии и восстанавливает заметки, измерения и журнал из сервера.

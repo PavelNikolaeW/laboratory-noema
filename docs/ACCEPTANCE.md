@@ -2,7 +2,7 @@
 
 Реализован самостоятельный локальный сервис: FastAPI/Pydantic 2, SQLAlchemy/SQLite WAL, durable worker, статический UI, async SDK, локальный CLI экспериментатора. Репозиторий содержит закрытый движок; участнику передаётся только `public/participant.zip` и его token.
 
-Автоматическая проверка: `python -m pytest -q` — **14 passed**. Это 14 сценарных тестов, покрывающих несколько требований каждый. Отдельно выполнены syntax check JS и браузерный informed-пилот. Один warning о deprecated alias в Starlette TestClient не влияет на результаты.
+Автоматическая проверка: `python -m pytest -q` — **15 passed**. Это 15 сценарных тестов, покрывающих несколько требований каждый. Отдельно выполнены syntax check JS и браузерный informed-пилот. Один warning о deprecated alias в Starlette TestClient не влияет на результаты.
 
 | ID | Результат и свидетельство |
 | --- | --- |
@@ -62,3 +62,10 @@
 Однопроцессный локальный профиль; высокая нагрузка и multiworker deployment не тестировались. Docker image собран; `scripts/docker_smoke.py` прошёл create → recipe → validation → restart → persisted result в отдельном временном volume. Публичный интернет-деплой не выполнялся: нужен выбранный хост и доступ к нему. Local service не требует внешнего аккаунта.
 
 Обоснование выбранного transaction/lifecycle механизма: [SQLite transactions](https://www.sqlite.org/lang_transaction.html), [FastAPI lifespan](https://fastapi.tiangolo.com/advanced/events/).
+
+
+## Новая попытка из локального UI
+
+Добавлен отдельный local-control listener (8766), доступный только с локальным управляющим cookie и разрешённым Origin. Публичный API не позволяет создавать/reset runs. Создание нового run и запись idempotency mapping выполняются в одной транзакции; предыдущий бюджет, данные и операции сохраняются. Тест `test_local_new_attempt_preserves_old_and_retries` проверяет изоляцию, полный новый бюджет, сохранение старых заметок и порций, отказ без cookie/с чужим Origin и безопасный повтор.
+
+Браузерная проверка: сохранена заметка в тестовом run → кнопка «Начать новую попытку» → 100 credits и пустой блокнот → возврат через переключатель → старая заметка доступна → reload сохраняет выбранную попытку. Screenshot: `ui-new-attempt.jpg`. Выбор порции/заказа теперь хранится отдельно для каждого токена, чтобы другие прохождения и вкладки не передавали чужие ID.

@@ -293,3 +293,40 @@ def test_admin_boundary_exports_metrics(world,tmp_path):
         assert summarize(r)['credits']['research']=='1'
     metrics=subprocess.run([*command,'metrics',auth['run_id']],capture_output=True,text=True)
     assert metrics.returncode==0 and json.loads(metrics.stdout)['run_id']==auth['run_id']
+
+
+def test_local_new_attempt_preserves_old_and_retries(world):
+    from lab.local_control import create_control, ORIGIN
+    c,app,auth=world
+    sample=obtain(c)
+    post(c,'notes',{'text':'keep my experiment'})
+    previous=c.get('/api/v1/session').json()
+    with TestClient(create_control(app.state.store.engine.url.database,secret='local-human-test-key')) as control:
+        headers={'Origin':ORIGIN,'Authorization':'Bearer '+auth['token'],'Idempotency-Key':'new-attempt'}
+        assert control.get('/capabilities').json()=={'new_attempt':False}
+        assert control.post('/attempts',headers=headers).status_code==403
+        control.cookies.set('lab-local-control','local-human-test-key')
+        assert control.get('/capabilities').json()=={'new_attempt':True}
+        assert control.post('/attempts',headers={k:v for k,v in headers.items() if k!='Origin'}).status_code==403
+        assert control.post('/attempts',headers={**headers,'Origin':'https://evil.example'}).status_code==403
+        assert control.post('/attempts',headers={**headers,'Authorization':'Bearer invalid'}).status_code==401
+        assert control.post('/attempts',headers=headers,json={'scenario':'S2'}).status_code==422
+        created=control.post('/attempts',headers=headers)
+        assert created.status_code==201
+        credentials=created.json()
+        assert control.post('/attempts',headers=headers).json()==credentials
+        assert credentials['run_id']!=auth['run_id']
+    # Public listener never offers this capability, even with valid participant credentials.
+    assert c.post('/api/v1/attempts').status_code==404
+    assert c.post('/attempts').status_code==404
+    assert c.get('/api/v1/session').json()==previous
+    assert c.get('/api/v1/notes').json()['items'][0]['text']=='keep my experiment'
+    assert c.get('/api/v1/samples/'+sample['id']).status_code==200
+    c.headers['Authorization']='Bearer '+credentials['token']
+    fresh=c.get('/api/v1/session').json()
+    assert fresh['budget']['remaining_credits']=='100'
+    assert fresh['orders'][0]['input_mass_g']==previous['orders'][0]['input_mass_g']
+    assert fresh['orders'][0]['status']=='open'
+    assert c.get('/api/v1/samples').json()['items']==[]
+    assert c.get('/api/v1/notes').json()['items']==[]
+    assert c.get('/api/v1/samples/'+sample['id']).status_code==404

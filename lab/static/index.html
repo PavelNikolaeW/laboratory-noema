@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Noema · Лаборатория</title><link rel="stylesheet" href="/static/style.css"><script src="/static/app.js" defer></script></head>
 <body>
-<header><a class="brand" href="/">n<span>oema</span><small>исследовательская лаборатория</small></a><div class="connection"><span id="connection">Нет подключения</span><button id="logout" class="quiet" hidden>Сменить токен</button></div></header>
+<header><a class="brand" href="/">n<span>oema</span><small>исследовательская лаборатория</small></a><div class="connection"><span id="connection">Нет подключения</span><select id="attempt-history" aria-label="Сохранённые попытки" hidden></select><button id="new-attempt" class="secondary" hidden>Начать новую попытку</button><button id="logout" class="quiet" hidden>Сменить токен</button></div></header>
 <main>
 <section id="login" class="login panel"><div class="eyebrow">РАБОЧИЙ СТОЛ ТЕХНОЛОГА</div><h1>От наблюдения<br>к проверенному рецепту.</h1><p>Исследуйте материал, сравнивайте опыты и проверяйте свои гипотезы. Каждое действие сохраняется в журнале.</p><form id="login-form"><label for="token">Токен прохождения</label><input id="token" type="password" required autocomplete="off" placeholder="Введите токен участника"><button>Открыть лабораторию <span>↗</span></button></form></section>
 <div id="workspace" hidden>

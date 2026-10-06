@@ -88,7 +88,12 @@ def create_app(database=None,delay=None):
         return token
 
     @app.get('/',include_in_schema=False)
-    def index(): return FileResponse(STATIC/'index.html')
+    def index(request:Request):
+        response=FileResponse(STATIC/'index.html')
+        control_key=os.getenv('LAB_LOCAL_CONTROL_KEY')
+        if control_key and request.client and request.client.host in ('127.0.0.1','::1') and request.headers.get('host')=='127.0.0.1:8765':
+            response.set_cookie('lab-local-control',control_key,httponly=True,samesite='strict')
+        return response
 
     app.mount('/static',StaticFiles(directory=STATIC),name='static')
 

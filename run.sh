@@ -10,4 +10,4 @@ if [ ! -f credentials-local.json ]; then
   chmod 600 credentials-local.json
 fi
 printf 'Лаборатория: http://127.0.0.1:8765\nТокен: credentials-local.json (не публикуйте этот файл)\n'
-exec .venv/bin/python -m uvicorn lab.app:app --host 127.0.0.1 --port 8765 --workers 1
+exec .venv/bin/python -m lab.local
